@@ -32,12 +32,14 @@ class DOTADataset(CustomDataset):
     CLASSES = ('plane', 'baseball-diamond', 'bridge', 'ground-track-field',
                'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
                'basketball-court', 'storage-tank', 'soccer-ball-field',
-               'roundabout', 'harbor', 'swimming-pool', 'helicopter')
+               'roundabout', 'harbor', 'swimming-pool', 'helicopter',
+               'container-crane', 'airport', 'helipad')
 
     PALETTE = [(165, 42, 42), (189, 183, 107), (0, 255, 0), (255, 0, 0),
                (138, 43, 226), (255, 128, 0), (255, 0, 255), (0, 255, 255),
                (255, 193, 193), (0, 51, 153), (255, 250, 205), (0, 139, 139),
-               (255, 255, 0), (147, 116, 116), (0, 0, 255)]
+               (255, 255, 0), (147, 116, 116), (0, 0, 255),
+               (172, 200, 0), (0, 128, 0), (0, 128, 255)]
 
     def __init__(self,
                  ann_file,
@@ -92,10 +94,15 @@ class DOTADataset(CustomDataset):
                 if os.path.getsize(ann_file) == 0 and self.filter_empty_gt:
                     continue
 
+
+                bbox_count = 0
+
                 with open(ann_file) as f:
                     s = f.readlines()
                     for si in s:
                         bbox_info = si.split()
+                        if len(bbox_info) < 10:
+                            continue
                         poly = np.array(bbox_info[:8], dtype=np.float32)
                         try:
                             x, y, w, h, a = poly2obb_np(poly, self.version)
@@ -110,6 +117,12 @@ class DOTADataset(CustomDataset):
                             gt_bboxes.append([x, y, w, h, a])
                             gt_labels.append(label)
                             gt_polygons.append(poly)
+                            #
+                            bbox_count += 1
+
+#                if bbox_count > 6000:
+#                    print(f'{img_name} > bbox count is {bbox_count} -> over than 6000, so ignore')
+#                    continue
 
                 if gt_bboxes:
                     data_info['ann']['bboxes'] = np.array(
