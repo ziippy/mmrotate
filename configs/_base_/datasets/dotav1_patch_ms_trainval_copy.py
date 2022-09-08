@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'DOTADataset'
-data_root = '../dl_data/DOTA-v1.0-v1.5/split_ms_dota/'
+data_root = '/home/jovyan/playGround/ziippy/dl_data/DOTA-v1.0-v1.5/split_ms_dota/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
